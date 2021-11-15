@@ -9,32 +9,40 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @ObservedObject var viewModel: EmojiMemoryGame
-    
+    @ObservedObject var viewModel: EmojiMemoryGame = EmojiMemoryGame()
     var body: some View {
         
         
-        ScrollView {
-            titleLabel.font(.system(size: 24.0))
-                .padding()
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 200))])  {
-                ForEach(viewModel.cards) { card in
-                    CardView(card: card)
-                        .aspectRatio(2/3, contentMode: .fit)
-                        .onTapGesture {
-                            viewModel.choose(card)
-                        }
+        VStack {
+            ScrollView {
+                titleLabel.font(.system(size: 24.0))
+                    .padding()
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65, maximum: 200))])  {
+                    ForEach(viewModel.cards) { card in
+                        CardView(card: card)
+                            .aspectRatio(2/3, contentMode: .fit)
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
+                    }
                 }
+            }           .foregroundColor(viewModel.getColourForCurrentTheme())
+        Spacer()
+            HStack {
+                themeButton
+                Spacer()
+                scoreLabel
             }
-        }           .foregroundColor(.red)
-            .padding(.horizontal)
+            
+        }
+        .padding(.horizontal)
     }
     
     
     
     var titleLabel: some View {
         Label {
-            Text("Memorize")
+            Text(viewModel.currentTheme.name)
                 .foregroundColor(.blue)
         } icon: {
                 Image(systemName: "brain.head.profile")
@@ -42,6 +50,20 @@ struct ContentView: View {
             
             
         }
+    }
+    
+    var themeButton: some View {
+        Button(action: {
+            viewModel.changeTheme()
+            })  {
+                Label("Change \n theme", systemImage: "square.grid.4x3.fill").font(.system(size: 12))
+            } .buttonStyle(.bordered)
+            
+    }
+    
+    var scoreLabel: some View {
+        Label("Score: \(viewModel.score)", systemImage: "bolt.fill")
+            .labelStyle(.titleOnly)
     }
 }
     
